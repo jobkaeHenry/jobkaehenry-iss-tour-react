@@ -47,14 +47,14 @@ function App() {
     }
     viewer.current.scene.highDynamicRange = true;
     // Clock 설정
-
+    const now = Cesium.JulianDate.now();
     viewer.current.clock.startTime = Cesium.JulianDate.addSeconds(
-      Cesium.JulianDate.now(),
+      now,
       -3,
       new Cesium.JulianDate()
     );
     viewer.current.clock.currentTime = Cesium.JulianDate.addSeconds(
-      Cesium.JulianDate.now(),
+      now,
       -3,
       new Cesium.JulianDate()
     );
@@ -76,15 +76,16 @@ function App() {
           !viewer.current?.entities.getById("cupola") &&
           viewer.current?.entities
         ) {
-          viewer.current.entities.add({
-            id: "iss",
-            model: {
-              uri: Iss,
-              minimumPixelSize: 128,
-              maximumScale: 20000,
-            },
-            position: positionProperty.current,
-          });
+          // viewer.current.entities.add({
+          //   id: "iss",
+          //   model: {
+          //     uri: Iss,
+          //     minimumPixelSize: 128,
+          //     maximumScale: 20000,
+          //     show: false,
+          //   },
+          //   position: positionProperty.current,
+          // });
 
           viewer.current.entities.add({
             id: "cupola",
@@ -92,13 +93,52 @@ function App() {
               uri: Cupola,
               minimumPixelSize: 128,
               maximumScale: 20000,
-              show: false,
             },
             position: positionProperty.current,
+            // show:false
           });
 
-          const entity = viewer.current?.entities.getById("iss");
+          const entity = viewer.current?.entities.getById("cupola");
           viewer.current.trackedEntity = entity;
+          viewer.current.scene.screenSpaceCameraController.minimumZoomDistance = 0;
+          viewer.current.scene.camera.zoomIn(999999999999999)
+
+          
+
+          // viewer.current.scene.camera.rotateLeft(110)
+
+          // viewer.current.scene.camera.lookLeft(30)
+          // viewer.current.scene.camera.lookUp(30)
+
+          // viewer.current.scene.postRender.addEventListener(() => {
+          //   const currentTime = Cesium.JulianDate.now();
+          //   if (
+          //     !viewer.current ||
+          //     !positionProperty.current.getValue(
+          //       currentTime,
+          //       new Cesium.Cartesian3()
+          //     )
+          //   ) {
+          //     return;
+          //   }
+          //   const camera = viewer.current.scene.camera;
+          //   entity.position = positionProperty.current.getValue(
+          //     currentTime,
+          //     new Cesium.Cartesian3()
+          //   );
+          //   viewer.current.scene.screenSpaceCameraController.enableTranslate =
+          //     false; // 이동 비활성화
+          //   viewer.current.scene.screenSpaceCameraController.enableTilt = false; // 기울기 비활성화
+          //   viewer.current.scene.screenSpaceCameraController.enableZoom = false; // 줌 비활성화
+          //   viewer.current.scene.screenSpaceCameraController.enableLook = false // Look 활성화
+          //   viewer.current.scene.screenSpaceCameraController.enableRotate = false // 회전 비활성화
+
+          //   camera.position = positionProperty.current.getValue(
+          //     currentTime,
+          //     new Cesium.Cartesian3()
+          //   );
+
+          // });
         }
         setTimeout(() => {
           setIsloading(false);
@@ -115,13 +155,14 @@ function App() {
           positionProperty.current.addSample(
             Cesium.JulianDate.addSeconds(
               Cesium.JulianDate.now(),
-              3.2,
+              3,
               new Cesium.JulianDate()
             ),
             Cesium.Cartesian3.fromDegrees(longitude, latitude, altitude * 1000)
           );
         });
     }, 3000);
+
     // 리턴시 인터벌제거
     return () => {
       if (viewer.current) {
